@@ -127,15 +127,17 @@ const BaseballDiamond: React.FC<BaseballDiamondProps> = ({ bases, animationState
        <style>{`
         /* Score Popup Animation */
         @keyframes score-popup {
-          0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; }
-          30%, 70% { transform: translate(-50%, -40px) scale(1.2); opacity: 1; }
-          100% { transform: translate(-50%, -80px) scale(1); opacity: 0; }
+          0% { transform: translate(-50%, 10px) scale(0.3); opacity: 0; }
+          30% { transform: translate(-50%, -55px) scale(1.2); opacity: 1; }
+          50% { transform: translate(-50%, -45px) scale(1.0); opacity: 1; } /* Bounce back */
+          80% { transform: translate(-50%, -50px) scale(1.05); opacity: 1; } /* Hold with slight wobble */
+          100% { transform: translate(-50%, -70px) scale(0.9); opacity: 0; }
         }
         .animate-score-popup {
-          animation: score-popup 1.5s ease-out forwards;
+          animation: score-popup 1.6s ease-out forwards;
         }
 
-        /* --- Refined Animations --- */
+        /* --- Batter & Misc Animations --- */
 
         /* Batter Swing Animation */
         .animate-swing { animation: swing-bat 0.7s ease-out forwards; }
@@ -179,82 +181,67 @@ const BaseballDiamond: React.FC<BaseballDiamondProps> = ({ bases, animationState
             50% { transform: translateY(-5px) rotate(2deg); }
         }
         
-        /* Runner Path Animations (with bobbing) */
+        /* --- Runner Path Animations (Straight Lines) --- */
+        /* These animations move runners along straight paths between bases. */
         .animate-run-home-to-1b { animation: run-home-to-1b 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
         @keyframes run-home-to-1b {
-          0% { bottom: 5%; left: 50%; opacity: 1; visibility: visible; }
-          40% { bottom: 2%; left: 75%; opacity: 1; }
-          100% { bottom: 50%; left: 95%; opacity: 1; transform: translate(-50%, 50%); }
+          0%   { top: 95%; left: 50%; opacity: 1; visibility: visible; }
+          100% { top: 50%; left: 95%; opacity: 1; }
         }
         .animate-run-home-to-2b { animation: run-home-to-2b 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
         @keyframes run-home-to-2b {
-          0% { bottom: 5%; left: 50%; opacity: 1; visibility: visible; }
-          25% { bottom: 2%; left: 75%; }
-          50% { bottom: 50%; left: 95%; transform: translate(-50%, 50%); }
-          75% { top: 2%; left: 75%; }
-          100% { top: 5%; left: 50%; }
+          0%   { top: 95%; left: 50%; opacity: 1; visibility: visible; }
+          50%  { top: 50%; left: 95%; }
+          100% { top: 5%;  left: 50%; }
         }
         .animate-run-home-to-3b { animation: run-home-to-3b 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
         @keyframes run-home-to-3b {
-          0% { bottom: 5%; left: 50%; opacity: 1; visibility: visible; }
-          17% { bottom: 2%; left: 75%; }
-          33% { bottom: 50%; left: 95%; transform: translate(-50%, 50%); }
-          50% { top: 2%; left: 75%; }
-          66% { top: 5%; left: 50%; }
-          83% { top: 50%; left: 2%; transform: translate(50%, -50%); }
-          100% { left: 5%; top: 50%; }
+          0%   { top: 95%; left: 50%; opacity: 1; visibility: visible; }
+          33%  { top: 50%; left: 95%; }
+          66%  { top: 5%;  left: 50%; }
+          100% { top: 50%; left: 5%; }
         }
         .animate-run-home-to-hr { animation: run-home-to-hr 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
         @keyframes run-home-to-hr {
-          0% { bottom: 5%; left: 50%; opacity: 1; visibility: visible; }
-          12.5% { bottom: 2%; left: 75%; }
-          25% { bottom: 50%; left: 95%; transform: translate(-50%, 50%); }
-          37.5% { top: 2%; left: 75%; }
-          50% { top: 5%; left: 50%; }
-          62.5% { top: 50%; left: 2%; transform: translate(50%, -50%); }
-          75% { left: 5%; top: 50%; }
-          87.5% { bottom: 2%; left: 25%; }
-          100% { bottom: 5%; left: 50%; opacity: 0; }
+          0%   { top: 95%; left: 50%; opacity: 1; visibility: visible; }
+          25%  { top: 50%; left: 95%; }
+          50%  { top: 5%;  left: 50%; }
+          75%  { top: 50%; left: 5%; }
+          100% { top: 95%; left: 50%; opacity: 0; }
         }
         .animate-run-1b-to-2b { animation: run-1b-to-2b 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
         @keyframes run-1b-to-2b {
-          0% { bottom: 50%; left: 95%; transform: translate(-50%, 50%); }
-          50% { top: 2%; left: 75%; }
-          100% { top: 5%; left: 50%; }
+          0%   { top: 50%; left: 95%; }
+          100% { top: 5%;  left: 50%; }
         }
         .animate-run-1b-to-3b { animation: run-1b-to-3b 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
         @keyframes run-1b-to-3b {
-          0% { bottom: 50%; left: 95%; transform: translate(-50%, 50%); }
-          33% { top: 2%; left: 75%; }
-          66% { top: 5%; left: 50%; }
-          100% { left: 5%; top: 50%; }
+          0%   { top: 50%; left: 95%; }
+          50%  { top: 5%;  left: 50%; }
+          100% { top: 50%; left: 5%; }
         }
          .animate-run-1b-to-home { animation: run-1b-to-home 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
         @keyframes run-1b-to-home {
-          0% { bottom: 50%; left: 95%; transform: translate(-50%, 50%); }
-          25% { top: 2%; left: 75%; }
-          50% { top: 5%; left: 50%; }
-          75% { left: 5%; top: 50%; }
-          100% { bottom: 5%; left: 50%; opacity: 0; }
+          0%   { top: 50%; left: 95%; }
+          33%  { top: 5%;  left: 50%; }
+          66%  { top: 50%; left: 5%; }
+          100% { top: 95%; left: 50%; opacity: 0; }
         }
         .animate-run-2b-to-3b { animation: run-2b-to-3b 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
         @keyframes run-2b-to-3b {
-          0% { top: 5%; left: 50%; }
-          50% { top: 50%; left: 2%; transform: translate(50%, -50%); }
-          100% { left: 5%; top: 50%; }
+          0%   { top: 5%;  left: 50%; }
+          100% { top: 50%; left: 5%; }
         }
         .animate-run-2b-to-home { animation: run-2b-to-home 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
         @keyframes run-2b-to-home {
-          0% { top: 5%; left: 50%; }
-          33% { left: 5%; top: 50%; }
-          66% { bottom: 2%; left: 25%; }
-          100% { bottom: 5%; left: 50%; opacity: 0; }
+          0%   { top: 5%;  left: 50%; }
+          50%  { top: 50%; left: 5%; }
+          100% { top: 95%; left: 50%; opacity: 0; }
         }
         .animate-run-3b-to-home { animation: run-3b-to-home 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
         @keyframes run-3b-to-home {
-          0% { left: 5%; top: 50%; }
-          50% { bottom: 2%; left: 25%; }
-          100% { bottom: 5%; left: 50%; opacity: 0; }
+          0%   { top: 50%; left: 5%; }
+          100% { top: 95%; left: 50%; opacity: 0; }
         }
       `}</style>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-green-600 to-green-800"></div>
@@ -278,7 +265,7 @@ const BaseballDiamond: React.FC<BaseballDiamondProps> = ({ bases, animationState
         </div>
         
         {scoreIndicator && (
-            <div key={scoreIndicator.key} className="absolute left-1/2 bottom-[15%] transform -translate-x-1/2 text-teal-600 text-4xl font-bold animate-score-popup z-40" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.2)' }}>
+            <div key={scoreIndicator.key} className="absolute left-1/2 bottom-[15%] transform -translate-x-1/2 text-yellow-300 text-5xl font-black tracking-tighter animate-score-popup z-40" style={{ textShadow: '3px 3px 0 #854d0e' }}>
                 +{scoreIndicator.runs}
             </div>
         )}

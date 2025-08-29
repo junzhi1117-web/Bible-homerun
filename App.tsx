@@ -13,17 +13,17 @@ export type AnswerResult = 'correct' | 'incorrect' | 'foul';
 
 // --- SOUND EFFECTS ---
 // Cheerful, looping background music for the game
-const backgroundMusic = new Audio('https://cdn.pixabay.com/audio/2022/08/29/audio_a5d2a9391e.mp3');
+const backgroundMusic = new Audio('https://storage.googleapis.com/primordial-audio/music/docs-music/serene-and-peaceful-11-seconds-191983.mp3');
 backgroundMusic.loop = true;
 backgroundMusic.volume = 0.3; // Keep it subtle
 backgroundMusic.preload = 'auto';
 
 // A pleasant chime for every correct answer (successful hit)
-const hitSuccessSound = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_240a820234.mp3');
+const hitSuccessSound = new Audio('https://storage.googleapis.com/primordial-audio/sound-effects/docs-sound-effects/interface-hint-notification-91118.mp3');
 hitSuccessSound.preload = 'auto';
 
 // An exciting crowd cheer when runs are scored
-const scoreCheerSound = new Audio('https://actions.google.com/sounds/v1/crowds/crowd_cheer.ogg');
+const scoreCheerSound = new Audio('https://storage.googleapis.com/primordial-audio/sound-effects/docs-sound-effects/stadium-crowd-and-whistle-39446.mp3');
 scoreCheerSound.preload = 'auto';
 // --- END SOUND EFFECTS ---
 
