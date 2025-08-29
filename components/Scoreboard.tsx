@@ -58,33 +58,30 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ score, hits, inning, topOfInnin
         
         <div className="col-span-8 space-y-2">
           {/* Header */}
-          <div className="grid grid-cols-6 text-sm sm:text-lg text-yellow-400/70">
+          <div className="grid grid-cols-5 text-sm sm:text-lg text-yellow-400/70">
             <div className="col-span-3">TEAM</div>
             <div className="text-center">R</div>
             <div className="text-center">H</div>
-            <div className="text-center">E</div>
           </div>
           
           {/* Away Team */}
-          <div className="grid grid-cols-6 text-xl sm:text-3xl font-bold tracking-wider items-center bg-black/30 p-2 rounded">
+          <div className="grid grid-cols-5 text-xl sm:text-3xl font-bold tracking-wider items-center bg-black/30 p-2 rounded">
             <div className="col-span-3 text-base sm:text-xl truncate flex items-center gap-2">
               <span className={`transition-opacity duration-500 text-glow ${topOfInning ? 'opacity-100' : 'opacity-0'}`}>⚾</span>
               <span title={teamNames.away}>{teamNames.away}</span>
             </div>
             <div className={`text-center text-glow ${awayScoreClass}`}>{score.away}</div>
             <div className="text-center text-glow">{hits.away}</div>
-            <div className="text-center text-yellow-400/80">-</div>
           </div>
           
           {/* Home Team */}
-          <div className="grid grid-cols-6 text-xl sm:text-3xl font-bold tracking-wider items-center bg-black/30 p-2 rounded">
+          <div className="grid grid-cols-5 text-xl sm:text-3xl font-bold tracking-wider items-center bg-black/30 p-2 rounded">
             <div className="col-span-3 text-base sm:text-xl truncate flex items-center gap-2">
               <span className={`transition-opacity duration-500 text-glow ${!topOfInning ? 'opacity-100' : 'opacity-0'}`}>⚾</span>
               <span title={teamNames.home}>{teamNames.home}</span>
             </div>
             <div className={`text-center text-glow ${homeScoreClass}`}>{score.home}</div>
             <div className="text-center text-glow">{hits.home}</div>
-            <div className="text-center text-yellow-400/80">-</div>
           </div>
         </div>
         

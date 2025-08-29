@@ -1,5 +1,7 @@
 
 export type HitType = '1B' | '2B' | '3B' | 'HR';
+export type BattingStrategy = 'normal' | 'power';
+export type GameState = 'setup' | 'playing' | 'gameover';
 
 export interface Question {
   id: number;
