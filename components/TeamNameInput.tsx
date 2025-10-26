@@ -1,17 +1,25 @@
-
 import React, { useState } from 'react';
 import { RunnerIcon, availableIcons } from './RunnerIcon';
-import type { RunnerIconType, TeamIcons } from '../types';
+import type { RunnerIconType, TeamIcons, GameLength } from '../types';
 
 interface TeamNameInputProps {
-  onStartGame: (details: { names: { away: string; home: string }, icons: TeamIcons }) => void;
+  onStartGame: (details: { names: { away: string; home: string }, icons: TeamIcons, length: GameLength }) => void;
 }
+
+const gameLengthOptions: { length: GameLength, label: string }[] = [
+    { length: 1, label: '一局決勝' },
+    { length: 3, label: '三局標準' },
+    { length: 5, label: '五局延長' },
+    { length: 9, label: '九局大戰' },
+];
+
 
 const TeamNameInput: React.FC<TeamNameInputProps> = ({ onStartGame }) => {
   const [awayName, setAwayName] = useState('客隊 (Away)');
   const [homeName, setHomeName] = useState('主隊 (Home)');
   const [awayIcon, setAwayIcon] = useState<RunnerIconType>('blue');
   const [homeIcon, setHomeIcon] = useState<RunnerIconType>('red');
+  const [gameLength, setGameLength] = useState<GameLength>(3);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +31,8 @@ const TeamNameInput: React.FC<TeamNameInputProps> = ({ onStartGame }) => {
       icons: {
         away: awayIcon,
         home: homeIcon,
-      }
+      },
+      length: gameLength,
     });
   };
 
@@ -61,7 +70,7 @@ const TeamNameInput: React.FC<TeamNameInputProps> = ({ onStartGame }) => {
         <h1 className="text-3xl sm:text-4xl font-bold tracking-wider text-gray-800 text-center mb-4">
           聖經全壘打
         </h1>
-        <h2 className="text-xl text-center text-gray-500 mb-6">設定隊伍</h2>
+        <h2 className="text-xl text-center text-gray-500 mb-6">設定比賽</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Away Team */}
           <div className="space-y-3 p-4 rounded-lg bg-white/50 border border-gray-200">
@@ -89,6 +98,26 @@ const TeamNameInput: React.FC<TeamNameInputProps> = ({ onStartGame }) => {
               className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-2 text-gray-800 text-lg focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400"
             />
              <IconSelector label="選擇跑者圖示" selectedIcon={homeIcon} onSelect={setHomeIcon} disabledIcon={awayIcon} />
+          </div>
+
+          <div className="space-y-3 p-4 rounded-lg bg-white/50 border border-gray-200">
+            <label className="block text-lg font-medium text-gray-600 text-center">比賽局數 (Innings)</label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {gameLengthOptions.map(option => (
+                <button
+                  type="button"
+                  key={option.length}
+                  onClick={() => setGameLength(option.length)}
+                  className={`py-2 px-3 rounded-lg text-center transition-all duration-200 font-semibold border-2 ${
+                    gameLength === option.length 
+                      ? 'bg-teal-600 text-white border-teal-700 shadow-md' 
+                      : 'bg-white hover:bg-gray-100 text-gray-700 border-gray-300'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <button

@@ -1,7 +1,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { fullQuestionBank } from './constants/questions';
-import type { Question, HitType, LastScoreInfo, TeamIcons, BattingStrategy, GameState } from './types';
+import type { Question, HitType, LastScoreInfo, TeamIcons, BattingStrategy, GameState, GameLength } from './types';
 import QuestionGrid from './components/QuestionGrid';
 import Scoreboard from './components/Scoreboard';
 import BaseballDiamond from './components/BaseballDiamond';
@@ -15,10 +15,24 @@ import GameOver from './components/GameOver';
 export type AnswerResult = 'correct' | 'incorrect' | 'foul';
 
 // --- SOUND EFFECTS ---
-const backgroundMusic = new Audio('https://storage.googleapis.com/tfjs-speech-commands-misc/Jalastram/background_music/playful.mp3');
-backgroundMusic.loop = true;
+const backgroundMusicUrls = [
+  'https://amachamusic.chagasi.com/mp3/natsuyasuminotanken.mp3',
+  'https://amachamusic.chagasi.com/mp3/capybaranoyume.mp3',
+  'https://amachamusic.chagasi.com/mp3/nagagutsudeodekake.mp3'
+];
+let currentTrackIndex = 0;
+// FIX: Explicitly create the Audio object and then set its source.
+const backgroundMusic = new Audio();
+backgroundMusic.src = backgroundMusicUrls[0];
 backgroundMusic.volume = 0.2;
 backgroundMusic.preload = 'auto';
+
+backgroundMusic.addEventListener('ended', () => {
+  currentTrackIndex = (currentTrackIndex + 1) % backgroundMusicUrls.length;
+  backgroundMusic.src = backgroundMusicUrls[currentTrackIndex];
+  backgroundMusic.play().catch(error => console.log("Audio play failed on track change:", error));
+});
+
 
 const batCrackSound = new Audio('https://storage.googleapis.com/tfjs-speech-commands-misc/Jalastram/sfx/hit_baseball.mp3');
 batCrackSound.preload = 'auto';
@@ -57,6 +71,7 @@ const App: React.FC = () => {
   const [score, setScore] = useState<{ home: number; away: number }>({ home: 0, away: 0 });
   const [hits, setHits] = useState<{ home: number; away: number }>({ home: 0, away: 0 });
   const [inning, setInning] = useState<number>(1);
+  const [totalInnings, setTotalInnings] = useState<GameLength>(3);
   const [topOfInning, setTopOfInning] = useState<boolean>(true);
   const [outs, setOuts] = useState<number>(0);
   const [bases, setBases] = useState<boolean[]>([false, false, false]);
@@ -70,10 +85,11 @@ const App: React.FC = () => {
   const [commentary, setCommentary] = useState('設定隊伍後，比賽即將開始！');
 
 
-  const handleStartGame = useCallback((details: { names: { away: string; home: string }, icons: TeamIcons }) => {
+  const handleStartGame = useCallback((details: { names: { away: string; home: string }, icons: TeamIcons, length: GameLength }) => {
     const selectedQuestions = selectRandomQuestions(fullQuestionBank, 64);
     setGameQuestions(selectedQuestions);
     
+    setTotalInnings(details.length);
     setAnsweredQuestions(new Set());
     setScore({ home: 0, away: 0 });
     setHits({ home: 0, away: 0 });
@@ -87,6 +103,9 @@ const App: React.FC = () => {
     setTeamNames(details.names);
     setTeamIcons(details.icons);
     setGameState('playing');
+    
+    currentTrackIndex = Math.floor(Math.random() * backgroundMusicUrls.length);
+    backgroundMusic.src = backgroundMusicUrls[currentTrackIndex];
     backgroundMusic.play().catch(error => console.log("Audio play failed:", error));
   }, []);
 
@@ -99,12 +118,12 @@ const App: React.FC = () => {
       setTopOfInning(false);
       setCommentary(`第 ${inning} 局下半，輪到 ${teamNames.home} 進攻。`);
     } else { // Bottom of inning ends
-      if (inning >= 3) {
+      if (inning >= totalInnings) {
         setGameState('gameover');
         const winner = score.home > score.away ? teamNames.home : teamNames.away;
         const tie = score.home === score.away;
         if (tie) {
-            setCommentary(`三局惡戰，雙方平手！`);
+            setCommentary(`${totalInnings}局惡戰，雙方平手！`);
         } else {
             setCommentary(`比賽結束！恭喜 ${winner} 以 ${Math.max(score.home, score.away)} 比 ${Math.min(score.home, score.away)} 獲勝！`);
         }
@@ -115,7 +134,7 @@ const App: React.FC = () => {
       setInning(prev => prev + 1);
       setCommentary(`第 ${inning + 1} 局上半，輪到 ${teamNames.away} 進攻。`);
     }
-  }, [topOfInning, inning, teamNames, score]);
+  }, [topOfInning, inning, teamNames, score, totalInnings]);
 
   const handleResetGame = useCallback(() => {
     setGameState('setup');

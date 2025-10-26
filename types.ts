@@ -1,13 +1,14 @@
-
 export type HitType = '1B' | '2B' | '3B' | 'HR';
 export type BattingStrategy = 'normal' | 'power';
 export type GameState = 'setup' | 'playing' | 'gameover';
+export type GameLength = 1 | 3 | 5 | 9;
 
 export interface Question {
   id: number;
   type: HitType;
   question: string;
   answer: string;
+  reference?: string;
 }
 
 export type LastScoreInfo = { team: 'home' | 'away'; runs: number; key: number } | null;
