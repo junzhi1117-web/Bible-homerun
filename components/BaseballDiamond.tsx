@@ -20,6 +20,12 @@ const Base: React.FC<{ active: boolean; position: string }> = ({ active, positio
 const Runner: React.FC<{ iconId: string; positionClass: string; animationClass?: string; style?: React.CSSProperties }> = ({ iconId, positionClass, animationClass, style }) => (
   <div className={`absolute w-8 h-8 z-20 transform -translate-x-1/2 -translate-y-1/2 ${positionClass} ${animationClass || ''}`} style={style}>
     <RunnerIcon iconId={iconId} />
+    {/* Dust cloud effect */}
+    {animationClass && animationClass.includes('animate-run') && (
+      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-6 pointer-events-none">
+        <div className="dust-cloud"></div>
+      </div>
+    )}
   </div>
 );
 
@@ -175,73 +181,121 @@ const BaseballDiamond: React.FC<BaseballDiamondProps> = ({ bases, animationState
             100% { opacity: 0; }
         }
         
-        /* Runner Bobbing Animation */
+        /* Enhanced Runner Bobbing Animation */
         @keyframes running-bob {
-            0%, 100% { transform: translateY(0) rotate(-2deg); }
-            50% { transform: translateY(-5px) rotate(2deg); }
+            0% { transform: translateY(0) scaleY(1) scaleX(1); }
+            25% { transform: translateY(-3px) scaleY(1.1) scaleX(0.95); }
+            50% { transform: translateY(-6px) scaleY(1.15) scaleX(0.9); }
+            75% { transform: translateY(-3px) scaleY(1.1) scaleX(0.95); }
+            100% { transform: translateY(0) scaleY(1) scaleX(1); }
+        }
+
+        /* Dust Cloud Animation */
+        .dust-cloud {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(139, 69, 19, 0.4) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: dust-puff 0.6s infinite ease-out;
+        }
+
+        @keyframes dust-puff {
+            0% { transform: scale(0.5); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+            100% { transform: scale(2); opacity: 0; }
         }
         
-        /* --- Runner Path Animations (Straight Lines) --- */
-        /* These animations move runners along straight paths between bases. */
-        .animate-run-home-to-1b { animation: run-home-to-1b 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
+        /* --- Enhanced Runner Path Animations --- */
+        /* Optimized with rotation, better easing, and smoother paths */
+        .animate-run-home-to-1b { animation: run-home-to-1b 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards, running-bob 0.25s infinite ease-in-out; }
         @keyframes run-home-to-1b {
-          0%   { top: 95%; left: 50%; opacity: 1; visibility: visible; }
-          100% { top: 50%; left: 95%; opacity: 1; }
+          0%   { top: 95%; left: 50%; opacity: 1; visibility: visible; transform: translate(-50%, -50%) rotate(-45deg) scale(1); }
+          20%  { transform: translate(-50%, -50%) rotate(-45deg) scale(1.05); }
+          80%  { transform: translate(-50%, -50%) rotate(-45deg) scale(1.05); }
+          100% { top: 50%; left: 95%; opacity: 1; transform: translate(-50%, -50%) rotate(-45deg) scale(1); }
         }
-        .animate-run-home-to-2b { animation: run-home-to-2b 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
+        .animate-run-home-to-2b { animation: run-home-to-2b 2.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards, running-bob 0.25s infinite ease-in-out; }
         @keyframes run-home-to-2b {
-          0%   { top: 95%; left: 50%; opacity: 1; visibility: visible; }
-          50%  { top: 50%; left: 95%; }
-          100% { top: 5%;  left: 50%; }
+          0%   { top: 95%; left: 50%; opacity: 1; visibility: visible; transform: translate(-50%, -50%) rotate(-45deg) scale(1); }
+          10%  { transform: translate(-50%, -50%) rotate(-45deg) scale(1.05); }
+          45%  { top: 50%; left: 95%; transform: translate(-50%, -50%) rotate(-45deg) scale(1.05); }
+          50%  { top: 50%; left: 95%; transform: translate(-50%, -50%) rotate(45deg) scale(1.05); }
+          90%  { transform: translate(-50%, -50%) rotate(45deg) scale(1.05); }
+          100% { top: 5%;  left: 50%; transform: translate(-50%, -50%) rotate(45deg) scale(1); }
         }
-        .animate-run-home-to-3b { animation: run-home-to-3b 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
+        .animate-run-home-to-3b { animation: run-home-to-3b 2.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards, running-bob 0.25s infinite ease-in-out; }
         @keyframes run-home-to-3b {
-          0%   { top: 95%; left: 50%; opacity: 1; visibility: visible; }
-          33%  { top: 50%; left: 95%; }
-          66%  { top: 5%;  left: 50%; }
-          100% { top: 50%; left: 5%; }
+          0%   { top: 95%; left: 50%; opacity: 1; visibility: visible; transform: translate(-50%, -50%) rotate(-45deg) scale(1); }
+          10%  { transform: translate(-50%, -50%) rotate(-45deg) scale(1.05); }
+          30%  { top: 50%; left: 95%; transform: translate(-50%, -50%) rotate(-45deg) scale(1.05); }
+          35%  { top: 50%; left: 95%; transform: translate(-50%, -50%) rotate(45deg) scale(1.05); }
+          63%  { top: 5%;  left: 50%; transform: translate(-50%, -50%) rotate(45deg) scale(1.05); }
+          68%  { top: 5%;  left: 50%; transform: translate(-50%, -50%) rotate(135deg) scale(1.05); }
+          95%  { transform: translate(-50%, -50%) rotate(135deg) scale(1.05); }
+          100% { top: 50%; left: 5%; transform: translate(-50%, -50%) rotate(135deg) scale(1); }
         }
-        .animate-run-home-to-hr { animation: run-home-to-hr 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
+        .animate-run-home-to-hr { animation: run-home-to-hr 3.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards, running-bob 0.25s infinite ease-in-out; }
         @keyframes run-home-to-hr {
-          0%   { top: 95%; left: 50%; opacity: 1; visibility: visible; }
-          25%  { top: 50%; left: 95%; }
-          50%  { top: 5%;  left: 50%; }
-          75%  { top: 50%; left: 5%; }
-          100% { top: 95%; left: 50%; opacity: 0; }
+          0%   { top: 95%; left: 50%; opacity: 1; visibility: visible; transform: translate(-50%, -50%) rotate(-45deg) scale(1); }
+          8%   { transform: translate(-50%, -50%) rotate(-45deg) scale(1.05); }
+          23%  { top: 50%; left: 95%; transform: translate(-50%, -50%) rotate(-45deg) scale(1.05); }
+          27%  { top: 50%; left: 95%; transform: translate(-50%, -50%) rotate(45deg) scale(1.05); }
+          48%  { top: 5%;  left: 50%; transform: translate(-50%, -50%) rotate(45deg) scale(1.05); }
+          52%  { top: 5%;  left: 50%; transform: translate(-50%, -50%) rotate(135deg) scale(1.05); }
+          73%  { top: 50%; left: 5%; transform: translate(-50%, -50%) rotate(135deg) scale(1.05); }
+          77%  { top: 50%; left: 5%; transform: translate(-50%, -50%) rotate(225deg) scale(1.05); }
+          95%  { top: 95%; left: 50%; transform: translate(-50%, -50%) rotate(225deg) scale(1.05); }
+          100% { top: 95%; left: 50%; opacity: 0; transform: translate(-50%, -50%) rotate(225deg) scale(0.8); }
         }
-        .animate-run-1b-to-2b { animation: run-1b-to-2b 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
+        .animate-run-1b-to-2b { animation: run-1b-to-2b 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards, running-bob 0.25s infinite ease-in-out; }
         @keyframes run-1b-to-2b {
-          0%   { top: 50%; left: 95%; }
-          100% { top: 5%;  left: 50%; }
+          0%   { top: 50%; left: 95%; transform: translate(-50%, -50%) rotate(45deg) scale(1); }
+          20%  { transform: translate(-50%, -50%) rotate(45deg) scale(1.05); }
+          80%  { transform: translate(-50%, -50%) rotate(45deg) scale(1.05); }
+          100% { top: 5%;  left: 50%; transform: translate(-50%, -50%) rotate(45deg) scale(1); }
         }
-        .animate-run-1b-to-3b { animation: run-1b-to-3b 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
+        .animate-run-1b-to-3b { animation: run-1b-to-3b 2.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards, running-bob 0.25s infinite ease-in-out; }
         @keyframes run-1b-to-3b {
-          0%   { top: 50%; left: 95%; }
-          50%  { top: 5%;  left: 50%; }
-          100% { top: 50%; left: 5%; }
+          0%   { top: 50%; left: 95%; transform: translate(-50%, -50%) rotate(45deg) scale(1); }
+          10%  { transform: translate(-50%, -50%) rotate(45deg) scale(1.05); }
+          45%  { top: 5%;  left: 50%; transform: translate(-50%, -50%) rotate(45deg) scale(1.05); }
+          50%  { top: 5%;  left: 50%; transform: translate(-50%, -50%) rotate(135deg) scale(1.05); }
+          90%  { transform: translate(-50%, -50%) rotate(135deg) scale(1.05); }
+          100% { top: 50%; left: 5%; transform: translate(-50%, -50%) rotate(135deg) scale(1); }
         }
-         .animate-run-1b-to-home { animation: run-1b-to-home 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
+        .animate-run-1b-to-home { animation: run-1b-to-home 2.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards, running-bob 0.25s infinite ease-in-out; }
         @keyframes run-1b-to-home {
-          0%   { top: 50%; left: 95%; }
-          33%  { top: 5%;  left: 50%; }
-          66%  { top: 50%; left: 5%; }
-          100% { top: 95%; left: 50%; opacity: 0; }
+          0%   { top: 50%; left: 95%; transform: translate(-50%, -50%) rotate(45deg) scale(1); }
+          10%  { transform: translate(-50%, -50%) rotate(45deg) scale(1.05); }
+          30%  { top: 5%;  left: 50%; transform: translate(-50%, -50%) rotate(45deg) scale(1.05); }
+          35%  { top: 5%;  left: 50%; transform: translate(-50%, -50%) rotate(135deg) scale(1.05); }
+          63%  { top: 50%; left: 5%; transform: translate(-50%, -50%) rotate(135deg) scale(1.05); }
+          68%  { top: 50%; left: 5%; transform: translate(-50%, -50%) rotate(225deg) scale(1.05); }
+          95%  { top: 95%; left: 50%; transform: translate(-50%, -50%) rotate(225deg) scale(1.05); }
+          100% { top: 95%; left: 50%; opacity: 0; transform: translate(-50%, -50%) rotate(225deg) scale(0.8); }
         }
-        .animate-run-2b-to-3b { animation: run-2b-to-3b 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
+        .animate-run-2b-to-3b { animation: run-2b-to-3b 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards, running-bob 0.25s infinite ease-in-out; }
         @keyframes run-2b-to-3b {
-          0%   { top: 5%;  left: 50%; }
-          100% { top: 50%; left: 5%; }
+          0%   { top: 5%;  left: 50%; transform: translate(-50%, -50%) rotate(135deg) scale(1); }
+          20%  { transform: translate(-50%, -50%) rotate(135deg) scale(1.05); }
+          80%  { transform: translate(-50%, -50%) rotate(135deg) scale(1.05); }
+          100% { top: 50%; left: 5%; transform: translate(-50%, -50%) rotate(135deg) scale(1); }
         }
-        .animate-run-2b-to-home { animation: run-2b-to-home 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
+        .animate-run-2b-to-home { animation: run-2b-to-home 2.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards, running-bob 0.25s infinite ease-in-out; }
         @keyframes run-2b-to-home {
-          0%   { top: 5%;  left: 50%; }
-          50%  { top: 50%; left: 5%; }
-          100% { top: 95%; left: 50%; opacity: 0; }
+          0%   { top: 5%;  left: 50%; transform: translate(-50%, -50%) rotate(135deg) scale(1); }
+          10%  { transform: translate(-50%, -50%) rotate(135deg) scale(1.05); }
+          45%  { top: 50%; left: 5%; transform: translate(-50%, -50%) rotate(135deg) scale(1.05); }
+          50%  { top: 50%; left: 5%; transform: translate(-50%, -50%) rotate(225deg) scale(1.05); }
+          90%  { top: 95%; left: 50%; transform: translate(-50%, -50%) rotate(225deg) scale(1.05); }
+          100% { top: 95%; left: 50%; opacity: 0; transform: translate(-50%, -50%) rotate(225deg) scale(0.8); }
         }
-        .animate-run-3b-to-home { animation: run-3b-to-home 1.8s cubic-bezier(0.42, 0, 0.58, 1) forwards, running-bob 0.3s infinite ease-in-out; }
+        .animate-run-3b-to-home { animation: run-3b-to-home 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards, running-bob 0.25s infinite ease-in-out; }
         @keyframes run-3b-to-home {
-          0%   { top: 50%; left: 5%; }
-          100% { top: 95%; left: 50%; opacity: 0; }
+          0%   { top: 50%; left: 5%; transform: translate(-50%, -50%) rotate(225deg) scale(1); }
+          20%  { transform: translate(-50%, -50%) rotate(225deg) scale(1.05); }
+          80%  { top: 95%; left: 50%; transform: translate(-50%, -50%) rotate(225deg) scale(1.05); }
+          100% { top: 95%; left: 50%; opacity: 0; transform: translate(-50%, -50%) rotate(225deg) scale(0.8); }
         }
       `}</style>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-green-600 to-green-800"></div>

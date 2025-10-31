@@ -202,7 +202,14 @@ const App: React.FC = () => {
       }
 
       setAnimationState({ type: effectiveHitType, startBases: bases });
-      const animationDuration = 2000;
+
+      // Dynamic animation duration based on hit type
+      const animationDuration = {
+        '1B': 1500,
+        '2B': 2200,
+        '3B': 2800,
+        'HR': 3500,
+      }[effectiveHitType] || 2000;
 
       setTimeout(() => {
         const startBases = [...bases];
