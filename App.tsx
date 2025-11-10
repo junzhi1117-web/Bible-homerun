@@ -16,26 +16,23 @@ import QuestionListModal from './components/QuestionListModal';
 export type AnswerResult = 'correct' | 'incorrect' | 'foul';
 
 // --- SOUND EFFECTS ---
-// 注意：背景音樂功能已暫時禁用，因為外部音頻資源不可用
-// 未來可以添加本地音頻文件或使用可靠的免費音樂API
 const backgroundMusicUrls: string[] = [
-  // 'https://amachamusic.chagasi.com/mp3/natsuyasuminotanken.mp3', // 已失效
-  // 'https://amachamusic.chagasi.com/mp3/capybaranoyume.mp3', // 已失效
-  // 'https://amachamusic.chagasi.com/mp3/nagagutsudeodekake.mp3' // 已失效
+  'https://amachamusic.chagasi.com/mp3/natsuyasuminotanken.mp3',
+  'https://amachamusic.chagasi.com/mp3/capybaranoyume.mp3',
+  'https://amachamusic.chagasi.com/mp3/nagagutsudeodekake.mp3'
 ];
 
-// 音效也暫時禁用，避免404錯誤
-const batCrackSound = new Audio();
-batCrackSound.preload = 'none';
+const batCrackSound = new Audio('https://storage.googleapis.com/tfjs-speech-commands-misc/Jalastram/sfx/hit_baseball.mp3');
+batCrackSound.preload = 'auto';
 
-const strikeoutSound = new Audio();
-strikeoutSound.preload = 'none';
+const strikeoutSound = new Audio('https://storage.googleapis.com/tfjs-speech-commands-misc/Jalastram/sfx/swoosh.mp3');
+strikeoutSound.preload = 'auto';
 
-const crowdSighSound = new Audio();
-crowdSighSound.preload = 'none';
+const crowdSighSound = new Audio('https://storage.googleapis.com/tfjs-speech-commands-misc/Jalastram/sfx/crowd_disappointed.mp3');
+crowdSighSound.preload = 'auto';
 
-const scoreCheerSound = new Audio();
-scoreCheerSound.preload = 'none';
+const scoreCheerSound = new Audio('https://storage.googleapis.com/tfjs-speech-commands-misc/Jalastram/sfx/crowd_cheer.mp3');
+scoreCheerSound.preload = 'auto';
 // --- END SOUND EFFECTS ---
 
 const selectRandomQuestions = (allQuestions: Question[], count: number): Question[] => {
@@ -81,12 +78,6 @@ const App: React.FC = () => {
   const trackIndexRef = useRef(0);
 
   useEffect(() => {
-    // 如果沒有音樂URL，則不初始化音頻
-    if (backgroundMusicUrls.length === 0) {
-      console.info('背景音樂已禁用：沒有可用的音頻資源');
-      return;
-    }
-
     const audio = new Audio();
     audio.volume = 0.2;
     audio.preload = 'auto';
@@ -97,7 +88,7 @@ const App: React.FC = () => {
         audio.play()
           .then(() => setIsMusicPlaying(true))
           .catch(error => {
-            console.error("Audio play failed on track change:", error);
+            console.warn("背景音樂播放失敗（可能被瀏覽器阻止）:", error.message);
             setIsMusicPlaying(false);
           });
     };
@@ -127,12 +118,6 @@ const App: React.FC = () => {
   }, []);
 
   const playMusic = useCallback(() => {
-      // 如果沒有音樂URL，直接返回
-      if (backgroundMusicUrls.length === 0) {
-        console.info('背景音樂已禁用');
-        return;
-      }
-
       const audio = backgroundMusicRef.current;
       if (audio && audio.paused) {
           trackIndexRef.current = Math.floor(Math.random() * backgroundMusicUrls.length);
@@ -145,7 +130,7 @@ const App: React.FC = () => {
                   setIsMusicPlaying(true);
                 })
                 .catch(error => {
-                  console.error("Audio playback was prevented by browser policy.", error);
+                  console.warn("音樂播放被瀏覽器阻止，請點擊播放按鈕手動啟動:", error.message);
                   setIsMusicPlaying(false);
               });
           }
@@ -383,19 +368,17 @@ const App: React.FC = () => {
                 >
                   查看題庫
                 </button>
-                {backgroundMusicUrls.length > 0 && (
-                  <button
-                    onClick={toggleMusic}
-                    className={`font-bold py-2 px-6 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-opacity-75 ${
-                      isMusicPlaying
-                        ? 'bg-green-500 hover:bg-green-600 text-white focus:ring-green-400'
-                        : 'bg-gray-200 hover:bg-gray-300 text-gray-700 focus:ring-gray-400'
-                    }`}
-                    title={isMusicPlaying ? '點擊暫停音樂' : '點擊播放音樂'}
-                  >
-                    {isMusicPlaying ? '🔊 音樂播放中' : '🔇 播放音樂'}
-                  </button>
-                )}
+                <button
+                  onClick={toggleMusic}
+                  className={`font-bold py-2 px-6 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-opacity-75 ${
+                    isMusicPlaying
+                      ? 'bg-green-500 hover:bg-green-600 text-white focus:ring-green-400'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-700 focus:ring-gray-400'
+                  }`}
+                  title={isMusicPlaying ? '點擊暫停音樂' : '點擊播放音樂'}
+                >
+                  {isMusicPlaying ? '🔊 音樂播放中' : '🔇 播放音樂'}
+                </button>
               </div>
             </div>
             <div className="lg:col-span-2 relative">
