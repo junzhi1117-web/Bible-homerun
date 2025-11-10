@@ -16,7 +16,7 @@ import QuestionListModal from './components/QuestionListModal';
 export type AnswerResult = 'correct' | 'incorrect' | 'foul';
 
 // --- SOUND EFFECTS ---
-const backgroundMusicUrls = [
+const backgroundMusicUrls: string[] = [
   'https://amachamusic.chagasi.com/mp3/natsuyasuminotanken.mp3',
   'https://amachamusic.chagasi.com/mp3/capybaranoyume.mp3',
   'https://amachamusic.chagasi.com/mp3/nagagutsudeodekake.mp3'
@@ -88,7 +88,7 @@ const App: React.FC = () => {
         audio.play()
           .then(() => setIsMusicPlaying(true))
           .catch(error => {
-            console.error("Audio play failed on track change:", error);
+            console.warn("背景音樂播放失敗（可能被瀏覽器阻止）:", error.message);
             setIsMusicPlaying(false);
           });
     };
@@ -130,7 +130,7 @@ const App: React.FC = () => {
                   setIsMusicPlaying(true);
                 })
                 .catch(error => {
-                  console.error("Audio playback was prevented by browser policy.", error);
+                  console.warn("音樂播放被瀏覽器阻止，請點擊播放按鈕手動啟動:", error.message);
                   setIsMusicPlaying(false);
               });
           }
