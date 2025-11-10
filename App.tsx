@@ -79,7 +79,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const audio = new Audio();
     audio.volume = 0.2;
-    audio.preload = 'auto';
+    audio.preload = 'none';
 
     const playNextTrack = () => {
         trackIndexRef.current = (trackIndexRef.current + 1) % backgroundMusicUrls.length;
