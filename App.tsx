@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { fullQuestionBank } from './constants/questions';
 import type { Question, HitType, LastScoreInfo, TeamIcons, BattingStrategy, GameState, GameLength } from './types';
 import QuestionGrid from './components/QuestionGrid';
@@ -11,6 +11,7 @@ import TeamNameInput from './components/TeamNameInput';
 import StrategyChoice from './components/StrategyChoice';
 import CommentaryBox from './components/CommentaryBox';
 import GameOver from './components/GameOver';
+import QuestionListModal from './components/QuestionListModal';
 
 export type AnswerResult = 'correct' | 'incorrect' | 'foul';
 
@@ -20,19 +21,6 @@ const backgroundMusicUrls = [
   'https://amachamusic.chagasi.com/mp3/capybaranoyume.mp3',
   'https://amachamusic.chagasi.com/mp3/nagagutsudeodekake.mp3'
 ];
-let currentTrackIndex = 0;
-// FIX: Explicitly create the Audio object and then set its source.
-const backgroundMusic = new Audio();
-backgroundMusic.src = backgroundMusicUrls[0];
-backgroundMusic.volume = 0.2;
-backgroundMusic.preload = 'auto';
-
-backgroundMusic.addEventListener('ended', () => {
-  currentTrackIndex = (currentTrackIndex + 1) % backgroundMusicUrls.length;
-  backgroundMusic.src = backgroundMusicUrls[currentTrackIndex];
-  backgroundMusic.play().catch(error => console.log("Audio play failed on track change:", error));
-});
-
 
 const batCrackSound = new Audio('https://storage.googleapis.com/tfjs-speech-commands-misc/Jalastram/sfx/hit_baseball.mp3');
 batCrackSound.preload = 'auto';
@@ -83,6 +71,55 @@ const App: React.FC = () => {
   const [gameQuestions, setGameQuestions] = useState<Question[]>([]);
   const [battingStrategy, setBattingStrategy] = useState<BattingStrategy | null>(null);
   const [commentary, setCommentary] = useState('設定隊伍後，比賽即將開始！');
+  const [isQuestionListVisible, setIsQuestionListVisible] = useState(false);
+
+  const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
+  const trackIndexRef = useRef(0);
+
+  useEffect(() => {
+    const audio = new Audio();
+    audio.volume = 0.2;
+    audio.preload = 'auto';
+
+    const playNextTrack = () => {
+        trackIndexRef.current = (trackIndexRef.current + 1) % backgroundMusicUrls.length;
+        audio.src = backgroundMusicUrls[trackIndexRef.current];
+        audio.play().catch(error => console.error("Audio play failed on track change:", error));
+    };
+
+    audio.addEventListener('ended', playNextTrack);
+    backgroundMusicRef.current = audio;
+
+    return () => {
+        audio.removeEventListener('ended', playNextTrack);
+        if (!audio.paused) {
+          audio.pause();
+        }
+    };
+  }, []);
+
+  const playMusic = useCallback(() => {
+      const audio = backgroundMusicRef.current;
+      if (audio && audio.paused) {
+          trackIndexRef.current = Math.floor(Math.random() * backgroundMusicUrls.length);
+          audio.src = backgroundMusicUrls[trackIndexRef.current];
+          
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+              playPromise.catch(error => {
+                  console.error("Audio playback was prevented by browser policy.", error);
+              });
+          }
+      }
+  }, []);
+
+  const stopMusic = useCallback(() => {
+      const audio = backgroundMusicRef.current;
+      if (audio) {
+          audio.pause();
+          audio.currentTime = 0;
+      }
+  }, []);
 
 
   const handleStartGame = useCallback((details: { names: { away: string; home: string }, icons: TeamIcons, length: GameLength }) => {
@@ -104,10 +141,8 @@ const App: React.FC = () => {
     setTeamIcons(details.icons);
     setGameState('playing');
     
-    currentTrackIndex = Math.floor(Math.random() * backgroundMusicUrls.length);
-    backgroundMusic.src = backgroundMusicUrls[currentTrackIndex];
-    backgroundMusic.play().catch(error => console.log("Audio play failed:", error));
-  }, []);
+    playMusic();
+  }, [playMusic]);
 
   const handleChangeSide = useCallback(() => {
     setOuts(0);
@@ -127,23 +162,21 @@ const App: React.FC = () => {
         } else {
             setCommentary(`比賽結束！恭喜 ${winner} 以 ${Math.max(score.home, score.away)} 比 ${Math.min(score.home, score.away)} 獲勝！`);
         }
-        backgroundMusic.pause();
+        stopMusic();
         return;
       }
       setTopOfInning(true);
       setInning(prev => prev + 1);
       setCommentary(`第 ${inning + 1} 局上半，輪到 ${teamNames.away} 進攻。`);
     }
-  }, [topOfInning, inning, teamNames, score, totalInnings]);
+  }, [topOfInning, inning, teamNames, score, totalInnings, stopMusic]);
 
   const handleResetGame = useCallback(() => {
     setGameState('setup');
     setTeamIcons({ away: 'blue', home: 'red' });
     setCommentary('設定隊伍後，比賽即將開始！');
-    
-    backgroundMusic.pause();
-    backgroundMusic.currentTime = 0;
-  }, []);
+    stopMusic();
+  }, [stopMusic]);
 
   const handleQuestionSelect = useCallback((question: Question) => {
     if (!answeredQuestions.has(question.id) && battingStrategy) {
@@ -282,7 +315,15 @@ const App: React.FC = () => {
                 teamIcons={teamIcons}
                 battingTeam={battingTeam}
               />
-              <ResetButton onReset={handleResetGame} />
+              <div className="flex justify-center items-center gap-4 -mt-4">
+                <ResetButton onReset={handleResetGame} />
+                <button
+                  onClick={() => setIsQuestionListVisible(true)}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
+                >
+                  查看題庫
+                </button>
+              </div>
             </div>
             <div className="lg:col-span-2 relative">
                <QuestionGrid 
@@ -308,6 +349,13 @@ const App: React.FC = () => {
 
           {gameState === 'gameover' && (
             <GameOver finalCommentary={commentary} onPlayAgain={handleResetGame} />
+          )}
+
+          {isQuestionListVisible && (
+            <QuestionListModal
+              questions={fullQuestionBank}
+              onClose={() => setIsQuestionListVisible(false)}
+            />
           )}
         </>
       )}
