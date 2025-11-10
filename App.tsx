@@ -72,6 +72,7 @@ const App: React.FC = () => {
   const [battingStrategy, setBattingStrategy] = useState<BattingStrategy | null>(null);
   const [commentary, setCommentary] = useState('設定隊伍後，比賽即將開始！');
   const [isQuestionListVisible, setIsQuestionListVisible] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
   const trackIndexRef = useRef(0);
@@ -84,14 +85,32 @@ const App: React.FC = () => {
     const playNextTrack = () => {
         trackIndexRef.current = (trackIndexRef.current + 1) % backgroundMusicUrls.length;
         audio.src = backgroundMusicUrls[trackIndexRef.current];
-        audio.play().catch(error => console.error("Audio play failed on track change:", error));
+        audio.play()
+          .then(() => setIsMusicPlaying(true))
+          .catch(error => {
+            console.error("Audio play failed on track change:", error);
+            setIsMusicPlaying(false);
+          });
+    };
+
+    const handlePause = () => {
+        if (audio.ended) return; // 不處理自然結束的情況
+        setIsMusicPlaying(false);
+    };
+
+    const handlePlay = () => {
+        setIsMusicPlaying(true);
     };
 
     audio.addEventListener('ended', playNextTrack);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('play', handlePlay);
     backgroundMusicRef.current = audio;
 
     return () => {
         audio.removeEventListener('ended', playNextTrack);
+        audio.removeEventListener('pause', handlePause);
+        audio.removeEventListener('play', handlePlay);
         if (!audio.paused) {
           audio.pause();
         }
@@ -103,11 +122,16 @@ const App: React.FC = () => {
       if (audio && audio.paused) {
           trackIndexRef.current = Math.floor(Math.random() * backgroundMusicUrls.length);
           audio.src = backgroundMusicUrls[trackIndexRef.current];
-          
+
           const playPromise = audio.play();
           if (playPromise !== undefined) {
-              playPromise.catch(error => {
+              playPromise
+                .then(() => {
+                  setIsMusicPlaying(true);
+                })
+                .catch(error => {
                   console.error("Audio playback was prevented by browser policy.", error);
+                  setIsMusicPlaying(false);
               });
           }
       }
@@ -118,8 +142,21 @@ const App: React.FC = () => {
       if (audio) {
           audio.pause();
           audio.currentTime = 0;
+          setIsMusicPlaying(false);
       }
   }, []);
+
+  const toggleMusic = useCallback(() => {
+      const audio = backgroundMusicRef.current;
+      if (audio) {
+          if (audio.paused) {
+              playMusic();
+          } else {
+              audio.pause();
+              setIsMusicPlaying(false);
+          }
+      }
+  }, [playMusic]);
 
 
   const handleStartGame = useCallback((details: { names: { away: string; home: string }, icons: TeamIcons, length: GameLength }) => {
@@ -135,13 +172,21 @@ const App: React.FC = () => {
     setOuts(0);
     setBases([false, false, false]);
     setBattingStrategy(null);
-    setCommentary(`比賽開始！輪到 ${details.names.away} 進攻，請選擇打擊策略。`);
 
     setTeamNames(details.names);
     setTeamIcons(details.icons);
     setGameState('playing');
-    
+
+    // 嘗試播放音樂，如果被瀏覽器阻止，用戶可以點擊音樂按鈕
     playMusic();
+
+    // 使用 setTimeout 確保 playMusic 的狀態更新後再設置解說
+    setTimeout(() => {
+      const musicHint = backgroundMusicRef.current?.paused
+        ? ' 💡 提示：點擊下方「播放音樂」按鈕開啟背景音樂。'
+        : '';
+      setCommentary(`比賽開始！輪到 ${details.names.away} 進攻，請選擇打擊策略。${musicHint}`);
+    }, 100);
   }, [playMusic]);
 
   const handleChangeSide = useCallback(() => {
@@ -315,13 +360,24 @@ const App: React.FC = () => {
                 teamIcons={teamIcons}
                 battingTeam={battingTeam}
               />
-              <div className="flex justify-center items-center gap-4 -mt-4">
+              <div className="flex justify-center items-center gap-4 -mt-4 flex-wrap">
                 <ResetButton onReset={handleResetGame} />
                 <button
                   onClick={() => setIsQuestionListVisible(true)}
                   className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
                 >
                   查看題庫
+                </button>
+                <button
+                  onClick={toggleMusic}
+                  className={`font-bold py-2 px-6 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-opacity-75 ${
+                    isMusicPlaying
+                      ? 'bg-green-500 hover:bg-green-600 text-white focus:ring-green-400'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-700 focus:ring-gray-400'
+                  }`}
+                  title={isMusicPlaying ? '點擊暫停音樂' : '點擊播放音樂'}
+                >
+                  {isMusicPlaying ? '🔊 音樂播放中' : '🔇 播放音樂'}
                 </button>
               </div>
             </div>
