@@ -27,27 +27,32 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ question, onClose, onAnsw
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fade-in-backdrop"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50 animate-fade-in-backdrop"
       onClick={onClose}
     >
       <div 
-        className="bg-gray-50 rounded-2xl shadow-xl w-full max-w-2xl mx-auto flex flex-col overflow-hidden border border-gray-200 animate-slide-in-modal"
+        className="bg-gray-50 rounded-xl sm:rounded-2xl shadow-xl w-full max-w-2xl mx-auto flex flex-col overflow-hidden border border-gray-200 animate-slide-in-modal max-h-[95vh] sm:max-h-none"
         onClick={(e) => e.stopPropagation()}
       >
-        <header className="p-4 text-gray-700 text-center bg-gray-100 border-b border-gray-200">
-          <h2 className="text-xl sm:text-2xl font-bold">問題 #{question.id} - {hitTypeInfo[question.type].text}</h2>
+        <header className="p-3 sm:p-4 text-gray-700 text-center bg-gray-100 border-b border-gray-200">
+          <h2 className="text-lg sm:text-2xl font-bold flex items-center justify-center gap-2">
+            <span>#{question.id}</span>
+            <span className={`px-2 py-0.5 rounded text-white text-sm ${hitTypeInfo[question.type].className}`}>
+              {hitTypeInfo[question.type].text}
+            </span>
+          </h2>
         </header>
 
-        <main className="p-6 sm:p-8 flex-grow text-gray-800">
+        <main className="p-5 sm:p-8 flex-grow text-gray-800 overflow-y-auto">
           <div className="mb-6">
-            <p className="text-lg sm:text-xl md:text-2xl leading-relaxed">{question.question}</p>
+            <p className="text-lg sm:text-xl md:text-2xl leading-relaxed font-medium">{question.question}</p>
           </div>
           
           <div className="text-center mb-6">
             {!showAnswer && (
               <button 
                 onClick={() => setShowAnswer(true)}
-                className="bg-white hover:bg-gray-100 text-gray-700 font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 border border-gray-300"
+                className="w-full sm:w-auto bg-white hover:bg-gray-100 text-gray-700 font-bold py-3 px-8 rounded-lg transition-transform transform active:scale-95 border border-gray-300 shadow-sm"
               >
                 顯示答案
               </button>
@@ -56,7 +61,7 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ question, onClose, onAnsw
           
           {showAnswer && (
             <div className="bg-gray-100 p-4 rounded-lg text-center transition-opacity duration-500 animate-fade-in border border-gray-200">
-              <h3 className="text-gray-600 font-bold text-lg mb-2">答案</h3>
+              <h3 className="text-gray-600 font-bold text-base sm:text-lg mb-2">答案</h3>
               <p className="text-xl sm:text-2xl text-gray-900 font-semibold">{question.answer}</p>
               {question.reference && (
                 <div className="mt-4 text-sm text-teal-700 bg-teal-100/70 rounded-full px-3 py-1 inline-flex items-center justify-center gap-2 font-medium">
@@ -74,21 +79,21 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ question, onClose, onAnsw
           <footer className="p-4 bg-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-gray-200">
             <button 
               onClick={() => onAnswer('incorrect')}
-              className="w-full bg-red-200 hover:bg-red-300 text-red-800 font-bold py-3 px-5 rounded-lg transition-transform transform hover:scale-105"
+              className="w-full bg-red-200 hover:bg-red-300 text-red-800 font-bold py-3 px-5 rounded-lg transition-transform transform active:scale-95 flex items-center justify-center gap-2"
             >
-              答錯 (出局)
+              <span>❌</span> 答錯 (出局)
             </button>
             <button 
               onClick={() => onAnswer('foul')}
-              className="w-full bg-amber-200 hover:bg-amber-300 text-amber-800 font-bold py-3 px-5 rounded-lg transition-transform transform hover:scale-105"
+              className="w-full bg-amber-200 hover:bg-amber-300 text-amber-800 font-bold py-3 px-5 rounded-lg transition-transform transform active:scale-95 flex items-center justify-center gap-2"
             >
-              界外球
+              <span>⚾</span> 界外球
             </button>
             <button 
               onClick={() => onAnswer('correct')}
-              className="w-full bg-green-200 hover:bg-green-300 text-green-800 font-bold py-3 px-5 rounded-lg transition-transform transform hover:scale-105"
+              className="w-full bg-green-200 hover:bg-green-300 text-green-800 font-bold py-3 px-5 rounded-lg transition-transform transform active:scale-95 flex items-center justify-center gap-2"
             >
-              答對 (安打)
+              <span>⭕</span> 答對 (安打)
             </button>
           </footer>
         )}

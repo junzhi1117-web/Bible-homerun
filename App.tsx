@@ -291,20 +291,20 @@ const App: React.FC = () => {
   const battingTeam = topOfInning ? 'away' : 'home';
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 md:p-8 flex flex-col items-center font-sans">
+    <div className="min-h-screen p-2 sm:p-6 md:p-8 flex flex-col items-center font-sans">
       {gameState === 'setup' ? (
         <TeamNameInput onStartGame={handleStartGame} />
       ) : (
         <>
-          <header className="w-full max-w-7xl text-center mb-6">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-wider text-gray-800">
+          <header className="w-full max-w-7xl text-center mb-4 sm:mb-6">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-wider text-gray-800">
               聖經全壘打
             </h1>
-            <p className="text-lg text-gray-500">Bible Home Run</p>
+            <p className="text-sm sm:text-lg text-gray-500">Bible Home Run</p>
           </header>
 
-          <main className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1 flex flex-col gap-6">
+          <main className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="lg:col-span-1 flex flex-col gap-4 sm:gap-6 w-full max-w-lg mx-auto lg:max-w-none">
               <Scoreboard score={score} hits={hits} outs={outs} inning={inning} topOfInning={topOfInning} lastScore={lastScore} teamNames={teamNames} />
               <CommentaryBox text={commentary} key={commentary} />
               <BaseballDiamond 
@@ -315,24 +315,24 @@ const App: React.FC = () => {
                 teamIcons={teamIcons}
                 battingTeam={battingTeam}
               />
-              <div className="flex justify-center items-center gap-4 -mt-4">
+              <div className="flex justify-center items-center gap-2 sm:gap-4 -mt-2 sm:-mt-4">
                 <ResetButton onReset={handleResetGame} />
                 <button
                   onClick={() => setIsQuestionListVisible(true)}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 sm:px-6 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 text-sm sm:text-base"
                 >
                   查看題庫
                 </button>
               </div>
             </div>
-            <div className="lg:col-span-2 relative">
+            <div className="lg:col-span-2 relative mt-4 lg:mt-0">
                <QuestionGrid 
                 questions={gameQuestions} 
                 answeredQuestions={answeredQuestions}
                 onQuestionSelect={handleQuestionSelect}
               />
               {battingStrategy === null && gameState === 'playing' && (
-                <div className="absolute inset-0 bg-gray-100/80 backdrop-blur-sm flex items-center justify-center rounded-lg z-10">
+                <div className="absolute inset-0 bg-gray-100/80 backdrop-blur-sm flex items-center justify-center rounded-lg z-10 px-4">
                     <StrategyChoice onSelect={setBattingStrategy} />
                 </div>
               )}

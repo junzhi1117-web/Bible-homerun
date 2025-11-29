@@ -35,8 +35,8 @@ const QuestionGrid: React.FC<QuestionGridProps> = ({ questions, answeredQuestion
   }, [questions]); // Reruns only if the base questions array changes.
 
   return (
-    <div className="bg-white/70 backdrop-blur-sm rounded-lg shadow-sm p-4 border border-gray-200">
-      <div className="grid grid-cols-8 gap-2">
+    <div className="bg-white/70 backdrop-blur-sm rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
+      <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2 sm:gap-3">
         {questionsWithColor.map((q) => {
           const isAnswered = answeredQuestions.has(q.id);
           return (
@@ -46,10 +46,10 @@ const QuestionGrid: React.FC<QuestionGridProps> = ({ questions, answeredQuestion
               disabled={isAnswered}
               className={`
                 aspect-square w-full rounded-md flex items-center justify-center 
-                font-bold text-lg sm:text-xl transition-all duration-200
+                font-bold text-base sm:text-lg md:text-xl transition-all duration-200 shadow-sm
                 ${isAnswered 
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60' 
-                  : `${q.colorClass} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transform hover:scale-105`
+                  : `${q.colorClass} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transform hover:scale-105 active:scale-95`
                 }
               `}
               aria-label={`Question ${q.id}`}

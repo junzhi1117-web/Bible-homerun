@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { RunnerIcon, availableIcons } from './RunnerIcon';
 import type { RunnerIconType, TeamIcons, GameLength } from '../types';
@@ -38,8 +39,8 @@ const TeamNameInput: React.FC<TeamNameInputProps> = ({ onStartGame }) => {
 
   const IconSelector: React.FC<{ label: string; selectedIcon: RunnerIconType; onSelect: (icon: RunnerIconType) => void; disabledIcon?: RunnerIconType }> = ({ label, selectedIcon, onSelect, disabledIcon }) => (
     <div>
-      <label className="block text-lg font-medium text-gray-500 mb-2">{label}</label>
-      <div className="flex items-center justify-center space-x-3 p-2 bg-gray-200/50 rounded-lg">
+      <label className="block text-base sm:text-lg font-medium text-gray-500 mb-2">{label}</label>
+      <div className="flex flex-wrap items-center justify-center gap-3 p-3 bg-gray-200/50 rounded-lg">
         {availableIcons.map(icon => {
           const isSelected = selectedIcon === icon;
           const isDisabled = disabledIcon === icon;
@@ -48,7 +49,7 @@ const TeamNameInput: React.FC<TeamNameInputProps> = ({ onStartGame }) => {
               type="button"
               key={icon}
               onClick={() => !isDisabled && onSelect(icon)}
-              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 transform hover:scale-110 ${isSelected ? 'ring-4 ring-teal-400' : 'ring-2 ring-transparent'} ${isDisabled ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-300/50'}`}
+              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 transform active:scale-95 ${isSelected ? 'ring-4 ring-teal-400 scale-110' : 'ring-2 ring-transparent'} ${isDisabled ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-300/50 hover:scale-110'}`}
               disabled={isDisabled}
               aria-label={`Select ${icon} icon`}
             >
@@ -63,52 +64,52 @@ const TeamNameInput: React.FC<TeamNameInputProps> = ({ onStartGame }) => {
   );
 
   return (
-    <div className="fixed inset-0 bg-gray-200/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-gray-200/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto">
       <div 
-        className="bg-gray-50 rounded-2xl shadow-xl w-full max-w-lg mx-auto p-8 border border-gray-200 text-gray-800"
+        className="bg-gray-50 rounded-2xl shadow-xl w-full max-w-lg mx-auto p-4 sm:p-8 border border-gray-200 text-gray-800 my-auto"
       >
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-wider text-gray-800 text-center mb-4">
+        <h1 className="text-2xl sm:text-4xl font-bold tracking-wider text-gray-800 text-center mb-2 sm:mb-4">
           聖經全壘打
         </h1>
-        <h2 className="text-xl text-center text-gray-500 mb-6">設定比賽</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <h2 className="text-base sm:text-xl text-center text-gray-500 mb-4 sm:mb-6">設定比賽</h2>
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Away Team */}
-          <div className="space-y-3 p-4 rounded-lg bg-white/50 border border-gray-200">
-            <label htmlFor="away-name" className="block text-lg font-medium text-gray-600">客隊 (Away)</label>
+          <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-white/50 border border-gray-200">
+            <label htmlFor="away-name" className="block text-base sm:text-lg font-medium text-gray-600">客隊 (Away)</label>
             <input
               type="text"
               id="away-name"
               value={awayName}
               onChange={(e) => setAwayName(e.target.value)}
               maxLength={12}
-              className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-2 text-gray-800 text-lg focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400"
+              className="w-full bg-white border-2 border-gray-300 rounded-lg px-3 py-2 text-gray-800 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400"
             />
             <IconSelector label="選擇跑者圖示" selectedIcon={awayIcon} onSelect={setAwayIcon} disabledIcon={homeIcon} />
           </div>
 
           {/* Home Team */}
-          <div className="space-y-3 p-4 rounded-lg bg-white/50 border border-gray-200">
-            <label htmlFor="home-name" className="block text-lg font-medium text-gray-600">主隊 (Home)</label>
+          <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-white/50 border border-gray-200">
+            <label htmlFor="home-name" className="block text-base sm:text-lg font-medium text-gray-600">主隊 (Home)</label>
             <input
               type="text"
               id="home-name"
               value={homeName}
               onChange={(e) => setHomeName(e.target.value)}
               maxLength={12}
-              className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-2 text-gray-800 text-lg focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400"
+              className="w-full bg-white border-2 border-gray-300 rounded-lg px-3 py-2 text-gray-800 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400"
             />
              <IconSelector label="選擇跑者圖示" selectedIcon={homeIcon} onSelect={setHomeIcon} disabledIcon={awayIcon} />
           </div>
 
-          <div className="space-y-3 p-4 rounded-lg bg-white/50 border border-gray-200">
-            <label className="block text-lg font-medium text-gray-600 text-center">比賽局數 (Innings)</label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-white/50 border border-gray-200">
+            <label className="block text-base sm:text-lg font-medium text-gray-600 text-center">比賽局數 (Innings)</label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
               {gameLengthOptions.map(option => (
                 <button
                   type="button"
                   key={option.length}
                   onClick={() => setGameLength(option.length)}
-                  className={`py-2 px-3 rounded-lg text-center transition-all duration-200 font-semibold border-2 ${
+                  className={`py-2 px-1 sm:px-3 rounded-lg text-center transition-all duration-200 font-semibold border-2 text-sm sm:text-base ${
                     gameLength === option.length 
                       ? 'bg-teal-600 text-white border-teal-700 shadow-md' 
                       : 'bg-white hover:bg-gray-100 text-gray-700 border-gray-300'
@@ -122,7 +123,7 @@ const TeamNameInput: React.FC<TeamNameInputProps> = ({ onStartGame }) => {
 
           <button
             type="submit"
-            className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg shadow-md text-xl transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75 mt-4"
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg shadow-md text-lg sm:text-xl transition-all duration-200 ease-in-out transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75 mt-4"
           >
             開始遊戲 (Start Game)
           </button>
